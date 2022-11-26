@@ -4,6 +4,20 @@ const token = '5900718432:AAHfhyW_qXEg33D_rdBwJai1lxdU_GaJSUc'
 
 const bot = new  HighFiveBot(token, {polling: true}) //https://www.youtube.com/watch?v=slcqnHIFrj8&t=45s&ab_channel=UlbiTV
 
+const sequelize = require ('./db')
+
+const usermodel = require ('./models')
+
+const start = async () => {
+    try{
+        await sequelize.authenticate()
+        await sequelize.sync()
+    }catch (E) {
+        console.log(E)
+    }
+
+}
+
 const gameOptions = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
@@ -25,8 +39,9 @@ bot.setMyCommands([
 bot.on( 'message', (msg) => {
         const textofmessage = msg.text;
         const chatid = msg.chat.id;
-
+        usermodel.create({chatid})
         if (textofmessage ==='/start') {
+
             bot.sendMessage( chatid, 'Привет! Я опубликую твою домашку в канале @HighFive_chn')
         }
         if (textofmessage ==='/info') {
