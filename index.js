@@ -21,7 +21,7 @@ bot.setMyCommands([
         {command: '/addhomework', description: 'Добавить домашку в канал'},
     ]
 )
-
+//ggggg
 bot.on( 'message', (msg) => {
         const textofmessage = msg.text;
         const chatid = msg.chat.id;
