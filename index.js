@@ -4,27 +4,10 @@ const token = '5900718432:AAHfhyW_qXEg33D_rdBwJai1lxdU_GaJSUc'
 
 const bot = new  HighFiveBot(token, {polling: true}) //https://www.youtube.com/watch?v=slcqnHIFrj8&t=45s&ab_channel=UlbiTV
 
-const sequelize = require ('./db')
-
-const usermodel = require ('./models')
-
-const start = async () => {
-    try{
-        await sequelize.authenticate()
-        await sequelize.sync()
-    }catch (E) {
-        console.log(E)
-    }
-
-}
-
-const gameOptions = {
+const startoptions = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
-            [{text: '1', callback_data: '1'}, {text: '2', callback_data: '2'}, {text: '3', callback_data: '3'}],
-            [{text: '4', callback_data: '4'}, {text: '5', callback_data: '5'}, {text: '6', callback_data: '6'}],
-            [{text: '7', callback_data: '7'}, {text: '8', callback_data: '8'}, {text: '9', callback_data: '9'}],
-            [{text: '0', callback_data: '0'}],
+            [{text: 'О боте', callback_data: '1'}, {text: 'Загрузить домашку', callback_data: '/addhomework'}]
         ]
     })
 }
@@ -35,21 +18,40 @@ bot.setMyCommands([
         {command: '/addhomework', description: 'Добавить домашку в канал'},
     ]
 )
-//ggggg
-bot.on( 'message', (msg) => {
+
+bot.on( 'message', async (msg) => {
+
         const textofmessage = msg.text;
         const chatid = msg.chat.id;
-        usermodel.create({chatid})
-        if (textofmessage ==='/start') {
 
-            bot.sendMessage( chatid, 'Привет! Я опубликую твою домашку в канале @HighFive_chn')
+        if (textofmessage ==='/start') {
+            return bot.sendMessage( chatid, 'Привет! Я опубликую твою домашку в канале @HighFive_chn', startoptions)
         }
         if (textofmessage ==='/info') {
-            bot.sendMessage( chatid, 'Введи /addhomework, чтобы добавить домашку')
+            await bot.sendMessage( chatid, 'Я добавляю домашку в канал. Сейчас в нем мало подписчиков, но тебе наверняка помогут))')
+            return console.log(msg)
         }
         if (textofmessage ==='/addhomework') {
-            bot.sendMessage( chatid, 'Введи /addmework, чтобы добавить домашку', gameOptions)
+            return  bot.sendMessage( chatid, 'Скинь мне файл со своей домашкой. Пока что я могу публиковать только картинки или текст, но если подписчиков станет больше, то обещаю научиться публиковать и другие файлы')
+
         }
-        else bot.sendMessage( chatid, 'Пока я не умею отвечать на это(');
+        else await bot.sendMessage( chatid, 'Пока я не умею отвечать на это(');
     }
 )
+
+bot.on('callback_query', async (msg) =>{
+
+    const data = msg.data;
+    const chatid = msg.message.chat.id;
+
+    if (data === '/addhomework') {
+        await bot.sendMessage( chatid, 'Прикрепи четкое фото или отправь текст своего задания');
+        await bot.on('message: photo', (writephoto) => {
+            return console.log(msg)
+        })
+
+    }
+    else return console.log('Элсе',msg);
+})
+
+bot.
