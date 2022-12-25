@@ -4,11 +4,9 @@ const token = '5900718432:AAHfhyW_qXEg33D_rdBwJai1lxdU_GaJSUc'
 
 const bot = new  HighFiveBot(token, {polling: true}) //https://www.youtube.com/watch?v=slcqnHIFrj8&t=45s&ab_channel=UlbiTV
 
-//COMMANDS
-bot.setMyCommands([
-        {command: '/start', description: 'Введи для запуска бота'},
-    ]
-)
+//const channelId = -1001879094761
+const channelId = 241094083
+
 //KEYBOARD OPTIONS
 const startoptions = {
     reply_markup: JSON.stringify({
@@ -19,66 +17,43 @@ const startoptions = {
 }
 //START
 const start = () => {
-        try {
-            bot.onText(/\/start/,  (msg) => {
-                const chatId = msg.chat.id;
-                bot.sendMessage( chatId, 'Привет! Я опубликую твою домашку в канале @HighFive_chn', startoptions)
-                bot.on('callback_query', (msg) => {
-                    console.log('ЛОГ!!!!!!msg')
-                    console.log(msg)
-                    const messageData = msg.data
-                    if (messageData === '/addhomework') {
-                        console.log(msg)
-                        console.log(chatId)
-                        bot.sendMessage(chatId, 'Пришли мне текст задания или его фото в хорошем качестве')
-                        bot.on('photo',   (msg) =>{
-                            console.log('ХУЙ1!!!!11!')
-                            console.log(msg)
-                            const photo = msg.photo[2].file_id
-                            bot.sendPhoto(chatId, photo)
-                            return
-                        })
-                        return
-                    } else
-                        bot.sendMessage(chatId, `Я тебя не понимаю`)
-                    return
-                })
-                return
-            })
 
-        } catch (e) { return bot.sendMessage(chatId, 'Произошла какая то ошибочка!)'); }
-}
+    bot.on('message', (msg) => {
+        const text = msg.text
+        const chatId = msg.chat.id
 
+            if (text === '/start') {
+                return bot.sendMessage(chatId, 'Привет! Я опубликую твою домашку в канале @HighFive_chn', startoptions)
+            }
+            return bot.sendMessage(chatId, 'Выбери нужное действие ✍', startoptions);
 
-const startPanel = (msg) => {
+    })
+
     bot.on('callback_query', (msg) => {
         const messageData = msg.data
+        const chatId = msg.message.chat.id;
+        if (messageData === '/info') {
+            return bot.sendMessage(chatId, 'Даю инфу как пользоваться')
+        }
         if (messageData === '/addhomework') {
-            console.log(msg)
-            console.log(chatId)
-            addhomework()
-            return
-        } else
-            bot.sendMessage(chatId, `Я тебя не понимаю`)
-        return
+            return addhomework(chatId)
+        }
+        return bot.sendMessage(chatId, 'Ошибка в коллбеке')
     })
 }
 
+const addhomework = async (chatId) => {
+    await bot.sendMessage(chatId, 'Пришли мне текст задания или его фото в хорошем качестве')
 
-const addhomework = () => {
-    bot.sendMessage(chatId, 'Пришли мне текст задания или его фото в хорошем качестве')
-    bot.on('photo',   (msg) =>{
-        console.log('ХУЙ1!!!!11!')
-        console.log(msg)
+     bot.on('photo', async (msg) => {
         const photo = msg.photo[2].file_id
-        bot.sendPhoto(chatId, photo)
-        return
+        await bot.sendPhoto(channelId, photo)
+        return bot.sendMessage(chatId, 'Функция в разработке')
     })
-    return
+
 }
 
-
-start()
+ start()
 
 
 
